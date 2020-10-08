@@ -1,0 +1,37 @@
+* citronella
+
+FIXME: my new library.
+
+** Usage
+
+FIXME: write usage documentation!
+
+Run the project's tests (they'll fail until you edit them):
+
+#+begin_example
+  $ clojure -A:test:runner -M:runner
+#+end_example
+
+Build a deployable jar of this library:
+
+#+begin_example
+  $ clojure -A:jar -M:jar
+#+end_example
+
+Install it locally:
+
+#+begin_example
+  $ clojure -A:install -M:install
+#+end_example
+
+Deploy it to Clojars -- needs `CLOJARS_USERNAME` and `CLOJARS_PASSWORD` environment variables:
+
+#+begin_example
+  $ clojure -A:deploy -M:deploy
+#+end_example
+
+** License
+
+Copyright © 2020 Tim Cross
+
+Distributed under the GNU Public License version 3

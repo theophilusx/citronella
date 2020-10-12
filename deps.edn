@@ -15,4 +15,6 @@
   :install {:extra-deps {deps-deploy/deps-deploy {:mvn/version "0.0.9"}}
             :main-opts ["-m" "deps-deploy.deps-deploy" "install" "citronella.jar"]}
   :deploy {:extra-deps {deps-deploy/deps-deploy {:mvn/version "0.0.9"}}
-           :main-opts ["-m" "deps-deploy.deps-deploy" "deploy" "citronella.jar"]}}}
+           :main-opts ["-m" "deps-deploy.deps-deploy" "deploy" "citronella.jar"]}
+  :demo1 {:extra-paths ["demo"]
+          :main-opts ["-m" "citronella-demo.demo1"]}}}

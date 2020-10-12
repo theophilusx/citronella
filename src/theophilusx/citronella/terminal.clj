@@ -1,40 +1,109 @@
 (ns theophilusx.citronella.terminal
-  (:require [theophilusx.citronella.constants :as constants]
-            [theophilusx.citronella.fonts :as fonts])
+  (:require [theophilusx.citronella.constants :as c])
   (:import com.googlecode.lanterna.terminal.DefaultTerminalFactory
-           com.googlecode.lanterna.terminal.ansi.UnixTerminal
-           com.googlecode.lanterna.terminal.swing.SwingTerminal
-           com.googlecode.lanterna.terminal.swing.TerminalAppearance
-           java.nio.charset.Charset
-           java.awt.Font))
-
-(defn get-swing-terminal [cols rows {:keys [font font-size palette]
-                                     :or {font ["Menlo" "Consolas" "Monospaced"]
-                                          font-size 16
-                                          palette :mac-os-x}}] 
-  (let [font       (fonts/get-font-name font)
-        appearance (TerminalAppearance.
-                    (Font. font Font/PLAIN font-size)
-                    (Font. font Font/BOLD font-size)
-                    (palette constants/palettes) true)]
-    (SwingTerminal. appearance cols rows))
-  )
+           java.nio.charset.Charset))
 
 (defn get-terminal
   ([]
-   (get-terminal :auto {}))
-  ([kind]
-   (get-terminal kind {}))
-  ([kind {:keys [cols rows charset in out]
-          :or {cols 40
-               rows 12
-               charset "UTF8"
-               in System/in
-               out System/out}}]
-   (let [term (case kind
-                :auto (-> (DefaultTerminalFactory. out in (Charset/forName charset))
-                          (.createTerminal))
-                :unix (-> (UnixTerminal. out in (Charset/forName charset))
-                          (.setterminalSize cols rows))
-                :swing (get-swing-terminal cols rows))]
-     term)))
+   (get-terminal {}))
+  ([{:keys [type out in charset]
+     :or   {type    :auto
+            out     System/out
+            in      System/in
+            charset "UTF-8"}}]
+   (let [factory (DefaultTerminalFactory. out in (Charset/forName charset))
+         term    (case type
+                   :auto (-> factory
+                             (.createTerminal))
+                   :text (-> factory
+                             (.setForceTextTerminal true)
+                             (.createTerminal))
+                   :gui  (-> factory
+                             (.setAutoOpenTerminalEmulatorWindow true)
+                             (.createTerminalEmulator)))]
+     (atom {:type           type
+            :open           true
+            :private        false
+            :cursor         (let [pos (.getCursorPosition term)]
+                              [(.getColumn pos) (.getRow pos)])
+            :cursor-visible true
+            :size           (let [size (.getTerminalSize term)]
+                              [(.getColumns size) (.getRows size)])
+            :text-graphics  (.newTextGraphics term)
+            :obj            term}))))
+
+(defn bell [term]
+  (.bell (:obj @term)))
+
+(defn cursor-position [term]
+  (let [pos (.getCursorPosition (:obj @term))]
+    (swap! term assoc :cursor [(.getColumn pos) (.getRow pos)])
+    (:cursor @term)))
+
+(defn set-cursor [term col row]
+  (.setCursorPosition (:obj @term) col row)
+  (cursor-position term))
+
+(defn set-background [term colour]
+  (.setBackgroundColor (:obj @term) colour))
+
+(defn set-foreground [term colour]
+  (.setForegroundColor (:obj @term) colour))
+
+(defn toggle-cursor-visible [term]
+  (.setCursorVisible (:obj @term) (not (:cursor-visible @term)))
+  (swap! term update :cursor-visible not))
+
+(defn terminal-size [term]
+  (let [size (.getTerminalSize (:obj @term))]
+    (swap! term assoc :size [(.getColumns size) (.getRows size)])
+    (:size @term)))
+
+(defn clear [term]
+  (.clearScreen (:obj @term))
+  (cursor-position term))
+
+(defn toggle-private-mode [term]
+  (if (:private @term)
+    (.exitPrivateMode (:obj @term))
+    (.enterPrivateMode (:obj @term)))
+  (swap! term update :private not))
+
+(defn close [term]
+  (when (:private @term)
+    (toggle-private-mode term))
+  (.close (:obj @term))
+  (swap! term assoc :open false))
+
+
+(defn flush-data [term]
+  (.flush (:obj @term))
+  (cursor-position term))
+
+(defn put-char [term c]
+  (.putCharacter (:obj @term) c)
+  (cursor-position term))
+
+(defn put-string
+  ([term s]
+   (let [[col row] (:cursor @term)]
+     (put-string term s col row)))
+  ([term s col row]
+   (.putString (:text-graphics @term) col row s))
+  ([term s col row sgr]
+   (.putString (:text-graphics @term) col row s [sgr])))
+
+(defn set-tg-foreground [term colour]
+  (.setForegroundColor (:text-graphics @term) colour))
+
+(defn set-tg-background [term colour]
+  (.setBackgroundColor (:text-graphics @term) colour))
+
+(defn read-input [term]
+  (let [ks (.readInput (:obj @term))]
+    {:event-time (.getEventTime ks)
+     :type (c/key-code->name (.getKeyType ks))
+     :alt (.isAltDown ks)
+     :control (.isCtrlDown ks)
+     :shift (.isShiftDown ks)
+     :char (.getCharacter ks)}))

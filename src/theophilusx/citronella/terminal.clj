@@ -1,6 +1,7 @@
 (ns theophilusx.citronella.terminal
   (:require [theophilusx.citronella.constants :as c])
   (:import com.googlecode.lanterna.terminal.DefaultTerminalFactory
+           com.googlecode.lanterna.terminal.TerminalResizeListener
            java.nio.charset.Charset))
 
 (defn get-terminal
@@ -107,3 +108,17 @@
      :control (.isCtrlDown ks)
      :shift (.isShiftDown ks)
      :char (.getCharacter ks)}))
+
+(defn add-resize-listener [term listener-fn]
+  (let [listener (reify TerminalResizeListener
+                   (onResized [this terminal newSize]
+                     (listener-fn (.getColumns newSize)
+                                  (.getRows newSize))))]
+    (.addResizeListener (:obj @term) listener)
+    (swap! term assoc :listener listener)
+    listener))
+
+(defn remove-resize-listener [term]
+  (when (:listener @term)
+    (.removeResizeListener (:obj @term) (:listener @term))
+    (swap! term assoc :listener nil)))

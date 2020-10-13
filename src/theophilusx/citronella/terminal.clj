@@ -1,4 +1,5 @@
 (ns theophilusx.citronella.terminal
+  "Functions to manipulate low level terminal definitions."
   (:require [theophilusx.citronella.constants :as c])
   (:import com.googlecode.lanterna.terminal.DefaultTerminalFactory
            com.googlecode.lanterna.terminal.TerminalResizeListener

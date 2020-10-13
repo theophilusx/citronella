@@ -159,6 +159,15 @@
   [term colour]
   (.setBackgroundColor (:text-graphics @term) colour))
 
+(defn draw-line
+  "Draw a line from `colx`/`rowx` to `coly`/`rowy`. The `term` argument is an
+  atom containing a terminal definition map. The `colx` and `rowx` arguments
+  specify the starting column and row while the `coly` and `rowy` arguments
+  specify the column and row to end the line. The `char` argument specifies
+  the character to use to draw the line."
+  [term colx rowx coly rowy char]
+  (.drawLine (:text-graphics @term) colx rowx coly rowy char))
+
 (defn read-input
   "Read an input character. This is a blocking operation which reads one character
   from the terminal input. Returns a map describing the character. The map

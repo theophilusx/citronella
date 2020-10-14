@@ -16,7 +16,7 @@
     (t/flush-data term)
     (t/put-string term "Last Keystroke: " 5 4 [:bold])
     (t/put-string term "<pending>" (+ 5 (count "Last Keystroke: ")) 4)
-    (t/draw-line term 5 6 (- (first (:size @term)) 5) 6 \-)
+    (t/draw-line term 5 6 (- (first (:size @term)) 5) 6 (:double-line-h c/symbols))
     (t/flush-data term)
     (loop [ks (t/read-input term)]
       (t/put-string term (str (:type ks) " " (:char ks)) (+ 5 (count "Last Keystroke: ")) 4)

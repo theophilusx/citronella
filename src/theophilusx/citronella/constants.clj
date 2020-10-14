@@ -1,78 +1,120 @@
 (ns theophilusx.citronella.constants
   (:import com.googlecode.lanterna.input.KeyType
-           com.googlecode.lanterna.terminal.swing.TerminalEmulatorPalette
-           [com.googlecode.lanterna TextColor$ANSI SGR]))
+           [com.googlecode.lanterna TextColor$ANSI SGR Symbols]))
 
 (defn key-name->code [name]
   (condp = name
-    :character KeyType/Character
-    :escape KeyType/Escape
-    :backspace KeyType/Backspace
-    :left KeyType/ArrowLeft
-    :right KeyType/ArrowRight
-    :up KeyType/ArrowUp
-    :down KeyType/ArrowDown
-    :insert KeyType/Insert
-    :delete KeyType/Delete
-    :home KeyType/Home
-    :end KeyType/End
-    :page-up KeyType/PageUp
-    :page-down KeyType/PageDown
-    :tab KeyType/Tab
-    :reverse-tab KeyType/ReverseTab
-    :enter KeyType/Enter
-    :unknown KeyType/Unknown
+    :character       KeyType/Character
+    :escape          KeyType/Escape
+    :backspace       KeyType/Backspace
+    :left            KeyType/ArrowLeft
+    :right           KeyType/ArrowRight
+    :up              KeyType/ArrowUp
+    :down            KeyType/ArrowDown
+    :insert          KeyType/Insert
+    :delete          KeyType/Delete
+    :home            KeyType/Home
+    :end             KeyType/End
+    :page-up         KeyType/PageUp
+    :page-down       KeyType/PageDown
+    :tab             KeyType/Tab
+    :reverse-tab     KeyType/ReverseTab
+    :enter           KeyType/Enter
+    :unknown         KeyType/Unknown
     :cursor-location KeyType/CursorLocation))
 
 (defn key-code->name [code]
   (condp = code
-    KeyType/Character :character
-    KeyType/Escape :escape
-    KeyType/Backspace :backspace
-    KeyType/ArrowLeft :left
-    KeyType/ArrowRight :right
-    KeyType/ArrowUp :up
-    KeyType/ArrowDown :down
-    KeyType/Insert :insert
-    KeyType/Delete :delete
-    KeyType/Home :home
-    KeyType/End :end
-    KeyType/PageUp :page-up
-    KeyType/PageDown :page-down
-    KeyType/Tab :tab
-    KeyType/ReverseTab :reverse-tab
-    KeyType/Enter :enter
-    KeyType/Unknown :unknown
+    KeyType/Character      :character
+    KeyType/Escape         :escape
+    KeyType/Backspace      :backspace
+    KeyType/ArrowLeft      :left
+    KeyType/ArrowRight     :right
+    KeyType/ArrowUp        :up
+    KeyType/ArrowDown      :down
+    KeyType/Insert         :insert
+    KeyType/Delete         :delete
+    KeyType/Home           :home
+    KeyType/End            :end
+    KeyType/PageUp         :page-up
+    KeyType/PageDown       :page-down
+    KeyType/Tab            :tab
+    KeyType/ReverseTab     :reverse-tab
+    KeyType/Enter          :enter
+    KeyType/Unknown        :unknown
     KeyType/CursorLocation :cursor-location))
 
-(def key-codes
-  {:character       KeyType/Character
-   :escape          KeyType/Escape
-   :backspace       KeyType/Backspace
-   :left            KeyType/ArrowLeft
-   :right           KeyType/ArrowRight
-   :up              KeyType/ArrowUp
-   :down            KeyType/ArrowDown
-   :insert          KeyType/Insert
-   :delete          KeyType/Delete
-   :home            KeyType/Home
-   :end             KeyType/End
-   :page-up         KeyType/PageUp
-   :page-down       KeyType/PageDown
-   :tab             KeyType/Tab
-   :reverse-tab     KeyType/ReverseTab
-   :enter           KeyType/Enter
-   :unknown         KeyType/Unknown
-   :cursor-location KeyType/CursorLocation})
-
-
-(def palettes
-  {:gnome      TerminalEmulatorPalette/GNOME_TERMINAL
-   :vga        TerminalEmulatorPalette/STANDARD_VGA
-   :windows-xp TerminalEmulatorPalette/WINDOWS_XP_COMMAND_PROMPT
-   :mac-os-x   TerminalEmulatorPalette/MAC_OS_X_TERMINAL_APP
-   :xterm      TerminalEmulatorPalette/PUTTY
-   :putty      TerminalEmulatorPalette/XTERM})
+(def symbols
+  {:arrow-down                           Symbols/ARROW_DOWN
+   :arrow-left                           Symbols/ARROW_LEFT
+   :arrow-right                          Symbols/ARROW_RIGHT
+   :arrow-up                             Symbols/ARROW_UP
+   :block-dense                          Symbols/BLOCK_DENSE
+   :block-middle                         Symbols/BLOCK_MIDDLE
+   :block-solid                          Symbols/BLOCK_SOLID
+   :block-sparse                         Symbols/BLOCK_SPARSE
+   :bold-from-normal-single-line-h       Symbols/BOLD_FROM_NORMAL_SINGLE_LINE_HORIZONTAL
+   :bold-from-normal-single-line-v       Symbols/BOLD_FROM_NORMAL_SINGLE_LINE_VERTICAL
+   :bold-single-line-h                   Symbols/BOLD_SINGLE_LINE_HORIZONTAL
+   :bold-single-line-v                   Symbols/BOLD_SINGLE_LINE_VERTICAL
+   :bold-to-normal-single-line-h         Symbols/BOLD_TO_NORMAL_SINGLE_LINE_HORIZONTAL
+   :bold-to-normal-single-line-v         Symbols/BOLD_TO_NORMAL_SINGLE_LINE_VERTICAL
+   :bullet                               Symbols/BULLET
+   :club                                 Symbols/CLUB
+   :diamond                              Symbols/DIAMOND
+   :double-line-bottom-left-corner       Symbols/DOUBLE_LINE_BOTTOM_LEFT_CORNER
+   :double-line-bottom-right-corner      Symbols/DOUBLE_LINE_BOTTOM_RIGHT_CORNER
+   :double-line-cross                    Symbols/DOUBLE_LINE_CROSS
+   :double-line-h                        Symbols/DOUBLE_LINE_HORIZONTAL
+   :double-line-h-single-line-cross      Symbols/DOUBLE_LINE_HORIZONTAL_SINGLE_LINE_CROSS
+   :double-line-t-down                   Symbols/DOUBLE_LINE_T_DOWN
+   :double-line-t-left                   Symbols/DOUBLE_LINE_T_LEFT
+   :double-line-t-right                  Symbols/DOUBLE_LINE_T_RIGHT
+   :double-line-t-up                     Symbols/DOUBLE_LINE_T_UP
+   :double-line-t-single-down            Symbols/DOUBLE_LINE_T_SINGLE_DOWN
+   :double-line-t-single-left            Symbols/DOUBLE_LINE_T_SINGLE_LEFT
+   :double-line-t-single-right           Symbols/DOUBLE_LINE_T_SINGLE_RIGHT
+   :double-line-t-single-up              Symbols/DOUBLE_LINE_T_SINGLE_UP
+   :double-line-top-left-corner          Symbols/DOUBLE_LINE_TOP_LEFT_CORNER
+   :double-line-top-right-corner         Symbols/DOUBLE_LINE_TOP_RIGHT_CORNER
+   :double-line-v                        Symbols/DOUBLE_LINE_VERTICAL
+   :double-line-v-single-line-cross      Symbols/DOUBLE_LINE_VERTICAL_SINGLE_LINE_CROSS
+   :face-black                           Symbols/FACE_BLACK
+   :face-white                           Symbols/FACE_WHITE
+   :female                               Symbols/FEMALE
+   :heart                                Symbols/HEART
+   :inverse-bullet                       Symbols/INVERSE_BULLET
+   :inverse-white-circle                 Symbols/INVERSE_WHITE_CIRCLE
+   :male                                 Symbols/MALE
+   :outlined-square                      Symbols/OUTLINED_SQUARE
+   :outlined-square-small                Symbols/OUTLINED_SQUARE_SMALL
+   :single-line-bottom-left-corner       Symbols/SINGLE_LINE_BOTTOM_LEFT_CORNER
+   :single-line-bottom-right-corner      Symbols/SINGLE_LINE_BOTTOM_RIGHT_CORNER
+   :single-line-cross                    Symbols/SINGLE_LINE_CROSS
+   :single-line-h                        Symbols/SINGLE_LINE_HORIZONTAL
+   :single-line-t-double-down            Symbols/SINGLE_LINE_T_DOUBLE_DOWN
+   :single-line-t-double-left            Symbols/SINGLE_LINE_T_DOUBLE_LEFT
+   :single-line-t-double-right           Symbols/SINGLE_LINE_T_DOUBLE_RIGHT
+   :single-line-t-double-up              Symbols/SINGLE_LINE_T_DOUBLE_UP
+   :single-line-t-down                   Symbols/SINGLE_LINE_T_DOWN
+   :single-line-t-left                   Symbols/SINGLE_LINE_T_LEFT
+   :single-line-t-right                  Symbols/SINGLE_LINE_T_RIGHT
+   :single-line-t-up                     Symbols/SINGLE_LINE_T_UP
+   :single-line-top-left-corner          Symbols/SINGLE_LINE_TOP_LEFT_CORNER
+   :single-line-top-right-corner         Symbols/SINGLE_LINE_TOP_RIGHT_CORNER
+   :single-line-v                        Symbols/SINGLE_LINE_VERTICAL
+   :solid-square                         Symbols/SOLID_SQUARE
+   :solid-square-small                   Symbols/SOLID_SQUARE_SMALL
+   :spades                               Symbols/SPADES
+   :triangle-down-pointing-black         Symbols/TRIANGLE_DOWN_POINTING_BLACK
+   :triangle-left-pointing-black         Symbols/TRIANGLE_LEFT_POINTING_BLACK
+   :triangle-right-pointing-black        Symbols/TRIANGLE_RIGHT_POINTING_BLACK
+   :triangle-up-pointing-black           Symbols/TRIANGLE_UP_POINTING_BLACK
+   :triangle-down-pointing-medium-black  Symbols/TRIANGLE_DOWN_POINTING_MEDIUM_BLACK
+   :triangle-left-pointing-medium-black  Symbols/TRIANGLE_LEFT_POINTING_MEDIUM_BLACK
+   :triangle-right-pointing-medium-black Symbols/TRIANGLE_RIGHT_POINTING_MEDIUM_BLACK
+   :triangle-up-pointing-medium-black    Symbols/TRIANGLE_UP_POINTING_MEDIUM_BLACK
+   :white-circle                         Symbols/WHITE_CIRCLE})
 
 (def ansi
   {:black   TextColor$ANSI/BLACK

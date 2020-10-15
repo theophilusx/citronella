@@ -1,7 +1,9 @@
 (ns theophilusx.citronella.terminal
   "Functions to manipulate low level terminal definitions."
   (:require [theophilusx.citronella.constants :as c])
-  (:import [com.googlecode.lanterna.terminal DefaultTerminalFactory TerminalResizeListener Terminal]
+  (:import [com.googlecode.lanterna.terminal DefaultTerminalFactory
+            TerminalResizeListener Terminal]
+           [com.googlecode.lanterna TerminalPosition TerminalSize] 
            com.googlecode.lanterna.graphics.TextGraphics
            java.nio.charset.Charset))
 
@@ -82,6 +84,12 @@
   (.setForegroundColor ^Terminal (:obj @term) (colour c/ansi))
   (swap! term assoc :foreground colour))
 
+(defn reset-colour-and-sgr
+  "Reset colours back to defaults and remove any active SGR codes"
+  [term]
+  (.resetColorAndSGR ^Terminal (:obj @term)))
+
+
 (defn toggle-cursor-visible
   "Toggle the visibility of the cursor. The `term` argument is an atom containing
   a terminal definition map."
@@ -154,7 +162,7 @@
   `:blue`, `:cyan`, `:default`, `:green`, `:magenta`, `:red`, `:white` and
   `:yellow`."
   [term colour]
-  (.setForegroundColor ^TextGraphics (:text-graphics @term) colour))
+  (.setForegroundColor ^TextGraphics (:text-graphics @term) (colour c/ansi)))
 
 (defn set-tg-background
   "Set the background for text graphics elements written to the buffer with
@@ -163,7 +171,7 @@
   `:blue`, `:cyan`, `:default`, `:green`, `:magenta`, `:red`, `:white` and
   `:yellow`."
   [term colour]
-  (.setBackgroundColor ^TextGraphics (:text-graphics @term) colour))
+  (.setBackgroundColor ^TextGraphics (:text-graphics @term) (colour c/ansi)))
 
 (defn draw-line
   "Draw a line from `colx`/`rowx` to `coly`/`rowy`. The `term` argument is an
@@ -174,6 +182,17 @@
   [term colx rowx coly rowy char]
   (.drawLine ^TextGraphics (:text-graphics @term) ^int colx ^int rowx ^int coly
              ^int rowy ^char char))
+
+(defn draw-rectangle
+  "Draw a rectangle. The `term` argument is an atom containing a terminal
+  definition map. The `col` and `row` arguments specify the top left corner
+  column and row. The `cols` and `rows` arguments specify the number of columns
+  and rows for the rectangle and the `char` character specifies the character to
+  use to draw the rectangle border."
+  [term col row cols rows char]
+  (let [pos (TerminalPosition. col row)
+        size (TerminalSize. cols rows)]
+    (.drawRectangle ^TextGraphics (:text-graphics @term) pos size char)))
 
 (defn read-input
   "Read an input character. This is a blocking operation which reads one character

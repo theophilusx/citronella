@@ -24,16 +24,16 @@
             out     System/out
             in      System/in
             charset "UTF-8"}}]
-   (let [factory (DefaultTerminalFactory. out in (Charset/forName charset))
-         ^Terminal term    (case type
-                   :auto (-> factory
-                             (.createTerminal))
-                   :text (-> factory
-                             (.setForceTextTerminal true)
-                             (.createTerminal))
-                   :gui  (-> factory
-                             (.setAutoOpenTerminalEmulatorWindow true)
-                             (.createTerminalEmulator)))]
+   (let [factory        (DefaultTerminalFactory. out in (Charset/forName charset))
+         ^Terminal term (case type
+                          :auto (-> factory
+                                    (.createTerminal))
+                          :text (-> factory
+                                    (.setForceTextTerminal true)
+                                    (.createTerminal))
+                          :gui  (-> factory
+                                    (.setAutoOpenTerminalEmulatorWindow true)
+                                    (.createTerminalEmulator)))]
      (atom {:type           type
             :open           true
             :private        false
@@ -42,6 +42,8 @@
             :cursor-visible true
             :size           (let [size (.getTerminalSize term)]
                               [(.getColumns size) (.getRows size)])
+            :background     :default
+            :foreground     :default
             :text-graphics  (.newTextGraphics term)
             :obj            term}))))
 
@@ -68,15 +70,17 @@
 
 (defn set-background
   "Set the terminal background colour. The `term` argument is an atom containing
-  a terminal definition map. The `colour` argument is an ANSI colour specifier."
+  a terminal definition map. The `colour` argument is an ANSI colour keyword."
   [term colour]
-  (.setBackgroundColor ^Terminal (:obj @term) colour))
+  (.setBackgroundColor ^Terminal (:obj @term) (colour c/ansi))
+  (swap! term assoc :background colour))
 
 (defn set-foreground
   "Set the terminal foreground colour. The `term` argument is an atom containing
-  a terminal definition map. The `colour` argument is an ANSI colour specifier."
+  a terminal definition map. The `colour` argument is an ANSI colour keyword."
   [term colour]
-  (.setForegroundColor ^Terminal (:obj @term) colour))
+  (.setForegroundColor ^Terminal (:obj @term) (colour c/ansi))
+  (swap! term assoc :foreground colour))
 
 (defn toggle-cursor-visible
   "Toggle the visibility of the cursor. The `term` argument is an atom containing
@@ -99,6 +103,7 @@
   definition map."
   [term]
   (.clearScreen ^Terminal (:obj @term))
+  (set-cursor term 0 0)
   (cursor-position term))
 
 (defn toggle-private-mode

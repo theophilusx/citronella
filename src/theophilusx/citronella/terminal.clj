@@ -211,9 +211,18 @@
         size (TerminalSize. cols rows)]
     (.fillRectangle ^TextGraphics (:text-graphics @term) pos size ^char char)))
 
-(defn get-character [term col row]
-  (let [^TextCharacter c (.getCharacter ^TextGraphics (:obj @term) col row)]
-    (.getCharacter c)))
+(defn get-char
+  "Return the character at the location specified by `col` and `row`. The `term`
+  argument is an atom containing a terminal definition map. The `col` argument
+  is an integer specifying the column within the terminal and the `row` argument
+  is an integer specifying the row within the terminal. Note that not all
+  terminal types support this functionality. Function will return nil when this
+  functionality is not supported."
+  [term col row]
+  (let [^TextCharacter c (.getCharacter ^TextGraphics (:text-graphics @term)
+                                        col row)]
+    (if c
+      (.getCharacter c))))
 
 (defn read-input
   "Read an input character. This is a blocking operation which reads one character

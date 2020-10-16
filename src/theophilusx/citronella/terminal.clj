@@ -3,7 +3,8 @@
   (:require [theophilusx.citronella.constants :as c])
   (:import [com.googlecode.lanterna.terminal DefaultTerminalFactory
             TerminalResizeListener Terminal]
-           [com.googlecode.lanterna TerminalPosition TerminalSize] 
+           [com.googlecode.lanterna TerminalPosition TerminalSize
+            TextCharacter] 
            com.googlecode.lanterna.graphics.TextGraphics
            java.nio.charset.Charset))
 
@@ -192,7 +193,27 @@
   [term col row cols rows char]
   (let [pos (TerminalPosition. col row)
         size (TerminalSize. cols rows)]
-    (.drawRectangle ^TextGraphics (:text-graphics @term) pos size char)))
+    (.drawRectangle ^TextGraphics (:text-graphics @term) pos size ^char char)))
+
+(defn fill
+  "Fill available writeable area of terminal with character using current
+  background and foreground colours. The `term` argument is an atom containing
+  a terminal definition map. The `char` character is the character to use as
+  the fill character."
+  [term char]
+  (.fill ^TextGraphics (:text-graphics @term) char))
+
+(defn fill-rectangle
+  "Fill a rectangle with top let corner at `col`/`row` that is `cols` columns
+  wide and `rows` rows deep using `char` character as the fill character. "
+  [term col row cols rows char]
+  (let [pos (TerminalPosition. col row)
+        size (TerminalSize. cols rows)]
+    (.fillRectangle ^TextGraphics (:text-graphics @term) pos size ^char char)))
+
+(defn get-character [term col row]
+  (let [^TextCharacter c (.getCharacter ^TextGraphics (:obj @term) col row)]
+    (.getCharacter c)))
 
 (defn read-input
   "Read an input character. This is a blocking operation which reads one character

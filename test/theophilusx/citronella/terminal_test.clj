@@ -1,6 +1,7 @@
 (ns theophilusx.citronella.terminal-test
   (:require [theophilusx.citronella.terminal :as sut]
-            [clojure.test :refer [deftest testing is]]))
+            [clojure.test :refer [deftest testing is]]
+            [clojure.string :as string]))
 
 (def term (atom nil))
 
@@ -85,6 +86,23 @@
     (sut/toggle-private-mode term)
     (is (= (:private @term) true))))
 
+(deftest write-tests
+  (testing (str "writing to terminal tests for " (:type @term) " type")
+    (when (= (:type @term) :gui)
+      (sut/toggle-private-mode term)
+      (sut/clear term)
+      (sut/set-cursor term 5 5)
+      (sut/put-char term \T)
+      (is (= (sut/get-char term 5 5) \T))
+      (sut/set-cursor term 5 6)
+      (sut/put-string term "test")
+      (let [s (string/join "" (map #(sut/get-char term % 6) [5 6 7 8]))]
+        (is (= s "test")))
+      (sut/put-string term "TEST" 5 7)
+      (let [s (string/join "" (map #(sut/get-char term % 7) [5 6 7 8]))]
+        (is (= s "TEST")))
+      (sut/toggle-private-mode term))))
+
 (deftest test-terminal-functions
   (doseq [t [:gui :text]]
     (reset! term @(sut/get-terminal {:type t}))
@@ -93,6 +111,7 @@
     (cursor-visible-test)
     (clear-test)
     (private-mode-test)
+    (write-tests)
     (sut/close term)))
 
 (defn test-ns-hook []

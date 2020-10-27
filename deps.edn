@@ -2,7 +2,8 @@
  :deps {org.clojure/clojure {:mvn/version "1.10.1"}
         com.googlecode.lanterna/lanterna {:mvn/version "3.0.3"}}
  :aliases
- {:test {:extra-paths ["test"]
+ {:dev {:extra-paths ["test" "demo"]}
+  :test {:extra-paths ["test"]
          :extra-deps {org.clojure/test.check {:mvn/version "1.0.0"}}}
   :runner
   {:extra-deps {com.cognitect/test-runner

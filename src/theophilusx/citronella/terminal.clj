@@ -221,7 +221,7 @@
   [term col row]
   (let [^TextCharacter c (.getCharacter ^TextGraphics (:text-graphics @term)
                                         col row)]
-    (if c
+    (when c
       (.getCharacter c))))
 
 (defn read-input

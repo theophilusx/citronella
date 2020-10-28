@@ -1,10 +1,11 @@
 (ns theophilusx.citronella.terminal
   "Functions to manipulate low level terminal definitions."
-  (:require [theophilusx.citronella.constants :as c])
+  (:require [theophilusx.citronella.constants :as c]
+            [theophilusx.citronella.text-graphics :as tgraph])
   (:import [com.googlecode.lanterna.terminal DefaultTerminalFactory
             TerminalResizeListener Terminal]
            [com.googlecode.lanterna TerminalPosition TerminalSize
-            TextCharacter] 
+            TextCharacter]
            com.googlecode.lanterna.graphics.TextGraphics
            java.nio.charset.Charset))
 
@@ -90,7 +91,6 @@
   [term]
   (.resetColorAndSGR ^Terminal (:obj @term)))
 
-
 (defn toggle-cursor-visible
   "Toggle the visibility of the cursor. The `term` argument is an atom containing
   a terminal definition map."
@@ -150,11 +150,9 @@
    (let [[col row] (:cursor @term)]
      (put-string term s col row)))
   ([term s col row]
-   (.putString ^TextGraphics (:text-graphics @term) ^int col ^int row ^String s))
+   (tgraph/put-string (:text-graphics @term) s col row))
   ([term s col row sgr-vec]
-   (let [sgr-opts (mapv #(% c/sgr) sgr-vec)]
-     (.putString ^TextGraphics (:text-graphics @term) ^int col ^int row
-                 ^String s ^java.util.Collection sgr-opts))))
+   (tgraph/put-string (:text-graphics @term) s col row sgr-vec)))
 
 (defn set-tg-foreground
   "Set the foreground for text graphics elements written to the buffer with
@@ -163,7 +161,7 @@
   `:blue`, `:cyan`, `:default`, `:green`, `:magenta`, `:red`, `:white` and
   `:yellow`."
   [term colour]
-  (.setForegroundColor ^TextGraphics (:text-graphics @term) (colour c/ansi)))
+  (tgraph/set-foreground (:text-graphics @term) colour))
 
 (defn set-tg-background
   "Set the background for text graphics elements written to the buffer with
@@ -172,7 +170,7 @@
   `:blue`, `:cyan`, `:default`, `:green`, `:magenta`, `:red`, `:white` and
   `:yellow`."
   [term colour]
-  (.setBackgroundColor ^TextGraphics (:text-graphics @term) (colour c/ansi)))
+  (tgraph/set-background (:text-graphics @term) colour))
 
 (defn draw-line
   "Draw a line from `colx`/`rowx` to `coly`/`rowy`. The `term` argument is an
@@ -181,8 +179,7 @@
   specify the column and row to end the line. The `char` argument specifies
   the character to use to draw the line."
   [term colx rowx coly rowy char]
-  (.drawLine ^TextGraphics (:text-graphics @term) ^int colx ^int rowx ^int coly
-             ^int rowy ^char char))
+  (tgraph/draw-line (:text-graphics @term) colx rowx coly rowy char))
 
 (defn draw-rectangle
   "Draw a rectangle. The `term` argument is an atom containing a terminal
@@ -191,9 +188,7 @@
   and rows for the rectangle and the `char` character specifies the character to
   use to draw the rectangle border."
   [term col row cols rows char]
-  (let [pos (TerminalPosition. col row)
-        size (TerminalSize. cols rows)]
-    (.drawRectangle ^TextGraphics (:text-graphics @term) pos size ^char char)))
+  (tgraph/draw-rectangle (:text-graphics @term) col row cols rows char))
 
 (defn fill
   "Fill available writeable area of terminal with character using current
@@ -201,15 +196,13 @@
   a terminal definition map. The `char` character is the character to use as
   the fill character."
   [term char]
-  (.fill ^TextGraphics (:text-graphics @term) char))
+  (tgraph/fill (:text-graphics @term) char))
 
 (defn fill-rectangle
   "Fill a rectangle with top let corner at `col`/`row` that is `cols` columns
   wide and `rows` rows deep using `char` character as the fill character. "
   [term col row cols rows char]
-  (let [pos (TerminalPosition. col row)
-        size (TerminalSize. cols rows)]
-    (.fillRectangle ^TextGraphics (:text-graphics @term) pos size ^char char)))
+  (tgraph/fill-rectangle (:text-graphics @term) col row cols rows char))
 
 (defn get-char
   "Return the character at the location specified by `col` and `row`. The `term`
@@ -219,10 +212,7 @@
   terminal types support this functionality. Function will return nil when this
   functionality is not supported."
   [term col row]
-  (let [^TextCharacter c (.getCharacter ^TextGraphics (:text-graphics @term)
-                                        col row)]
-    (when c
-      (.getCharacter c))))
+  (tgraph/get-char (:text-graphics @term) col row))
 
 (defn read-input
   "Read an input character. This is a blocking operation which reads one character

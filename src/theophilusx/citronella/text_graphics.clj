@@ -2,7 +2,8 @@
   (:import com.googlecode.lanterna.graphics.TextGraphics
            [com.googlecode.lanterna TerminalPosition TerminalSize
             TextCharacter])
-  (:require [theophilusx.citronella.constants :as c]))
+  (:require [theophilusx.citronella.constants :as c]
+            [theophilusx.citronella.utils :as utils]))
 
 (defn put-string
   ([tg s col row]
@@ -11,11 +12,11 @@
    (let [sgr-opts (mapv #(% c/sgr) sgr-vec)]
      (.putString tg col row s ^java.util.Collection sgr-opts))))
 
-(defn set-foreground [^TextGraphics tg colour]
-  (.setForeground tg (colour c/ansi)))
+(defn set-foreground [^TextGraphics tg color]
+  (.setForeground tg (utils/make-color color)))
 
-(defn set-background [^TextGraphics tg colour]
-  (.setBackground tg (colour c/ansi)))
+(defn set-background [^TextGraphics tg color]
+  (.setBackground tg (utils/make-color color)))
 
 (defn draw-line [^TextGraphics tg colx rowx coly rowy chr]
   (.drawLine tg colx rowx coly rowy chr))
@@ -36,4 +37,7 @@
 (defn get-char [^TextGraphics tg col row]
   (let [^TextCharacter c (.getCharacter tg col row)]
     (when c
-      (.getCharacter c))))
+      {:char (utils/get-char c)
+       :fg (utils/get-fg c)
+       :bg (utils/get-bg c)
+       :modifiers (utils/sgr-modifiers c)})))

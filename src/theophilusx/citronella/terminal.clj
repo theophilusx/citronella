@@ -1,12 +1,10 @@
 (ns theophilusx.citronella.terminal
   "Functions to manipulate low level terminal definitions."
   (:require [theophilusx.citronella.constants :as c]
-            [theophilusx.citronella.text-graphics :as tgraph])
+            [theophilusx.citronella.text-graphics :as tgraph]
+            [theophilusx.citronella.utils :as utils])
   (:import [com.googlecode.lanterna.terminal DefaultTerminalFactory
             TerminalResizeListener Terminal]
-           [com.googlecode.lanterna TerminalPosition TerminalSize
-            TextCharacter]
-           com.googlecode.lanterna.graphics.TextGraphics
            java.nio.charset.Charset))
 
 (defn get-terminal
@@ -42,10 +40,10 @@
             :open           true
             :private        false
             :cursor         (let [pos (.getCursorPosition term)]
-                              [(.getColumn pos) (.getRow pos)])
+                              [(utils/column-pos pos) (utils/row-pos pos)])
             :cursor-visible true
             :size           (let [size (.getTerminalSize term)]
-                              [(.getColumns size) (.getRows size)])
+                              [(utils/columns size) (utils/rows size)])
             :background     :default
             :foreground     :default
             :text-graphics  (.newTextGraphics term)
@@ -62,7 +60,7 @@
   The `term` argument is an atom containing the terminal definition map."
   [term]
   (let [pos (.getCursorPosition ^Terminal (:obj @term))]
-    (swap! term assoc :cursor [(.getColumn pos) (.getRow pos)])
+    (swap! term assoc :cursor [(utils/column-pos pos) (utils/row-pos pos)])
     (:cursor @term)))
 
 (defn set-cursor
@@ -75,18 +73,18 @@
 (defn set-background
   "Set the terminal background colour. The `term` argument is an atom containing
   a terminal definition map. The `colour` argument is an ANSI colour keyword."
-  [term colour]
-  (.setBackgroundColor ^Terminal (:obj @term) (colour c/ansi))
-  (swap! term assoc :background colour))
+  [term color]
+  (.setBackgroundColor ^Terminal (:obj @term) (utils/make-color color))
+  (swap! term assoc :background color))
 
 (defn set-foreground
   "Set the terminal foreground colour. The `term` argument is an atom containing
   a terminal definition map. The `colour` argument is an ANSI colour keyword."
-  [term colour]
-  (.setForegroundColor ^Terminal (:obj @term) (colour c/ansi))
-  (swap! term assoc :foreground colour))
+  [term color]
+  (.setForegroundColor ^Terminal (:obj @term) (utils/make-color color))
+  (swap! term assoc :foreground color))
 
-(defn reset-colour-and-sgr
+(defn reset-color-and-sgr
   "Reset colours back to defaults and remove any active SGR codes"
   [term]
   (.resetColorAndSGR ^Terminal (:obj @term)))
@@ -104,7 +102,7 @@
   argument is an atom containing a terminal definition map."
   [term]
   (let [size (.getTerminalSize ^Terminal (:obj @term))]
-    (swap! term assoc :size [(.getColumns size) (.getRows size)])
+    (swap! term assoc :size [(utils/columns size) (utils/rows size)])
     (:size @term)))
 
 (defn clear

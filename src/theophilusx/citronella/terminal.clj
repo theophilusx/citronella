@@ -159,7 +159,7 @@
   `:blue`, `:cyan`, `:default`, `:green`, `:magenta`, `:red`, `:white` and
   `:yellow`."
   [term colour]
-  (tgraph/set-foreground (:text-graphics @term) colour))
+  (tgraph/set-fg (:text-graphics @term) colour))
 
 (defn set-tg-background
   "Set the background for text graphics elements written to the buffer with
@@ -168,7 +168,7 @@
   `:blue`, `:cyan`, `:default`, `:green`, `:magenta`, `:red`, `:white` and
   `:yellow`."
   [term colour]
-  (tgraph/set-background (:text-graphics @term) colour))
+  (tgraph/set-bg (:text-graphics @term) colour))
 
 (defn draw-line
   "Draw a line from `colx`/`rowx` to `coly`/`rowy`. The `term` argument is an

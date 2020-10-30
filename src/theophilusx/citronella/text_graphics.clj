@@ -12,12 +12,6 @@
    (let [sgr-opts (mapv #(% c/sgr) sgr-vec)]
      (.putString tg col row s ^java.util.Collection sgr-opts))))
 
-(defn set-foreground [^TextGraphics tg color]
-  (.setForeground tg (utils/make-color color)))
-
-(defn set-background [^TextGraphics tg color]
-  (.setBackground tg (utils/make-color color)))
-
 (defn draw-line [^TextGraphics tg colx rowx coly rowy chr]
   (.drawLine tg colx rowx coly rowy chr))
 
@@ -41,3 +35,9 @@
        :fg (utils/get-fg c)
        :bg (utils/get-bg c)
        :modifiers (utils/sgr-modifiers c)})))
+
+(defn set-fg [^TextGraphics tg color]
+  (.setForegroundColor tg ^TextColor (utils/make-color color)))
+
+(defn set-bg [^TextGraphics tg color]
+  (.setBackgroundColor tg ^TextColor (utils/make-color color)))

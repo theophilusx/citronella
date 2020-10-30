@@ -18,4 +18,6 @@
   :deploy {:extra-deps {deps-deploy/deps-deploy {:mvn/version "0.0.9"}}
            :main-opts ["-m" "deps-deploy.deps-deploy" "deploy" "citronella.jar"]}
   :demo1 {:extra-paths ["demo"]
-          :main-opts ["-m" "citronella-demo.demo1"]}}}
+          :main-opts ["-m" "citronella-demo.demo1"]}
+  :demo2 {:extra-paths ["demo"]
+          :main-opts ["-m" "citronella-demo.demo2"]}}}

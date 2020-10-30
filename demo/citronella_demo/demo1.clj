@@ -14,7 +14,7 @@
     (t/put-string term "Terminal Size: " 5 3 [:bold])
     (t/put-string term (str (:size @term)) (+ 5 (count "Terminal Size: ")) 3)
     (t/flush-data term)
-    (t/put-string term "Last Keystroke: " 5 4 [:bold])
+    (t/put-string term "Last Keystroke: " 5 4 [:bold :underline])
     (t/put-string term "<pending>" (+ 5 (count "Last Keystroke: ")) 4)
     (t/draw-line term 5 6 (- (first (:size @term)) 5) 6 (:double-line-h c/symbols))
     (t/draw-rectangle term 5 10 5 5 (:heart c/symbols))

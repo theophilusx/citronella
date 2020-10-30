@@ -1,16 +1,16 @@
 (ns theophilusx.citronella.text-graphics
-  (:import com.googlecode.lanterna.graphics.TextGraphics
+  (:import [com.googlecode.lanterna.graphics TextGraphics]
            [com.googlecode.lanterna TerminalPosition TerminalSize
-            TextCharacter])
+            TextCharacter TextColor])
   (:require [theophilusx.citronella.constants :as c]
             [theophilusx.citronella.utils :as utils]))
 
 (defn put-string
   ([tg s col row]
-   (.putString tg col row s))
+   (.putString ^TextGraphics tg ^int col ^int row ^String s))
   ([tg s col row sgr-vec]
    (let [sgr-opts (mapv #(% c/sgr) sgr-vec)]
-     (.putString tg col row s ^java.util.Collection sgr-opts))))
+     (.putString ^TextGraphics tg ^int col ^int row ^String s ^java.util.Collection sgr-opts))))
 
 (defn draw-line [^TextGraphics tg colx rowx coly rowy chr]
   (.drawLine tg colx rowx coly rowy chr))

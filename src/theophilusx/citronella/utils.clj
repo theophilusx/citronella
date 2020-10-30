@@ -1,18 +1,19 @@
 (ns theophilusx.citronella.utils
   (:import [com.googlecode.lanterna TextColor TextColor$Factory TextCharacter
-            TerminalPosition TerminalSize])
-  (:require [theophilusx.citronella.constants :as c]))
+            TerminalPosition TerminalSize SGR])
+  (:require [theophilusx.citronella.constants :as c]
+            [clojure.string :as string]))
 
 (defn make-color [s]
-  (TextColor$Factory/fromString s))
+  (if (string? s)
+    (TextColor$Factory/fromString s)
+    s))
 
 (defn make-character
   ([chr]
    (TextCharacter. chr))
-  ([chr fg bg & sgr-vec]
-   (let [sgr-opts (mapv #(% c/sgr) (first sgr-vec))]
-     (TextCharacter. chr ^TextColor (make-color fg) ^TextColor (make-color bg)
-                     ^java.util.Colleciton sgr-opts))))
+  ([chr fg bg]
+   (TextCharacter. chr (make-color fg)  (make-color bg) (make-array SGR 0))))
 
 (defn get-fg [^TextCharacter chr]
   (.getForegroundColor chr))

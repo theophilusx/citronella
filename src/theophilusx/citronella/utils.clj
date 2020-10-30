@@ -36,4 +36,4 @@
   (.getColumns s))
 
 (defn rows [^TerminalSize s]
-  (:.getRows s))
+  (.getRows s))

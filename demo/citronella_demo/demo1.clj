@@ -6,11 +6,11 @@
   (let [term (t/get-terminal {:type :gui})]
     (t/toggle-private-mode term)
     (t/toggle-cursor-visible term)
-    (t/set-tg-foreground term :black)
-    (t/set-tg-background term :white)
+    (t/set-tg-foreground term "black")
+    (t/set-tg-background term "white")
     (t/put-string term "Citronella Demo 1 - Press ESC to exit" 2 1)
-    (t/set-tg-foreground term :default)
-    (t/set-tg-background term :default)
+    (t/set-tg-foreground term "default")
+    (t/set-tg-background term "default")
     (t/put-string term "Terminal Size: " 5 3 [:bold])
     (t/put-string term (str (:size @term)) (+ 5 (count "Terminal Size: ")) 3)
     (t/flush-data term)
@@ -24,7 +24,4 @@
       (t/flush-data term)
       (if (= (:type ks) :escape)
         (t/close term)
-        (recur (t/read-input term)))))) 
-
-
-
+        (recur (t/read-input term))))))

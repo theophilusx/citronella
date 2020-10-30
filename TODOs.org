@@ -1,0 +1,13 @@
+* Tasks
+** TODO Add default resize handler to terminal objects
+
+   Default resize listener should update :size and :cursor keys in terminal
+   object when the terminal is resized. Should also create new TextGraphics object.
+
+** TODO Add default resize listener to screen object
+
+   Default resize listener should update :cursor and :size keys. Also need to
+   create new :text-grpphics object and possibly refresh the screen if
+   necessary.
+
+** TODO Add additional options to get-terminal to set the size of the initial terminal

@@ -1,7 +1,8 @@
 (ns theophilusx.citronella.screen
   (:require [theophilusx.citronella.terminal :as terminal]
             [theophilusx.citronella.utils :as utils]
-            [theophilusx.citronella.constants :as c])
+            [theophilusx.citronella.constants :as c]
+            [theophilusx.citronella.text-graphics :as tgraph])
   (:import [com.googlecode.lanterna.screen Screen TerminalScreen]))
 
 (defn get-screen
@@ -139,6 +140,36 @@
   ([scrn col row chr fg bg sgr-vec]
    (let [tc (utils/make-character chr fg bg sgr-vec)]
      (.setCharacter (:obj @scrn) col row tc))))
+
+(defn put-string
+  ([scrn s col row]
+   (tgraph/put-string (:text-graphics @scrn) s col row))
+  ([scrn s col row sgr-vec]
+   (tgraph/put-string (:text-graphics @scrn) s col row sgr-vec)))
+
+(defn draw-line
+  [scrn colx rowx coly rowy chr]
+  (tgraph/draw-line (:text-graphics @scrn) colx rowx coly rowy chr))
+
+(defn draw-rectangle
+  [scrn col row cols rows chr]
+  (tgraph/draw-rectangle (:text-graphics @scrn) col row cols rows chr))
+
+(defn fill
+  [scrn chr]
+  (tgraph/fill (:text-graphics @scrn) chr))
+
+(defn fill-rectangle
+  [scrn col row cols rows chr]
+  (tgraph/fill-rectangle (:text-graphics @scrn) col row cols rows chr))
+
+(defn set-tg-fg
+  [scrn color]
+  (tgraph/set-fg (:text-graphics @scrn) color))
+
+(defn set-tg-bg
+  [scrn color]
+  (tgraph/set-bg (:text-graphics @scrn) color))
 
 (defn read-input
   "Read one character of input. This is a blocking function. The `scrn` argument

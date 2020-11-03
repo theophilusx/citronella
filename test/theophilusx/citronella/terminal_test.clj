@@ -56,16 +56,16 @@
 
 (deftest colour-tests
   (testing (str "set colours for " (:type @term) " type")
-    (is (= (:background @term) :default))
-    (is (= (:foreground @term) :default))
-    (sut/set-background term :black)
-    (sut/set-foreground term :white)
-    (is (= (:background @term) :black))
-    (is (= (:foreground @term) :white))
-    (sut/set-background term :default)
-    (sut/set-foreground term :default)
-    (is (= (:background @term) :default))
-    (is (= (:foreground @term) :default))))
+    (is (= (:background @term) "DEFAULT"))
+    (is (= (:foreground @term) "DEFAULT"))
+    (sut/set-background term "BLACK")
+    (sut/set-foreground term "WHITE")
+    (is (= (:background @term) "BLACK"))
+    (is (= (:foreground @term) "WHITE"))
+    (sut/set-background term "DEFAULT")
+    (sut/set-foreground term "DEFAULT")
+    (is (= (:background @term) "DEFAULT"))
+    (is (= (:foreground @term) "DEFAULT"))))
 
 (deftest cursor-visible-test
   (testing (str "toggle cursor visibility for " (:type @term) " type")
@@ -93,13 +93,13 @@
       (sut/clear term)
       (sut/set-cursor term 5 5)
       (sut/put-char term \T)
-      (is (= (sut/get-char term 5 5) \T))
+      (is (= (:char (sut/get-char term 5 5)) \T))
       (sut/set-cursor term 5 6)
       (sut/put-string term "test")
-      (let [s (string/join "" (map #(sut/get-char term % 6) [5 6 7 8]))]
+      (let [s (string/join "" (map #(:char (sut/get-char term % 6)) [5 6 7 8]))]
         (is (= s "test")))
       (sut/put-string term "TEST" 5 7)
-      (let [s (string/join "" (map #(sut/get-char term % 7) [5 6 7 8]))]
+      (let [s (string/join "" (map #(:char (sut/get-char term % 7)) [5 6 7 8]))]
         (is (= s "TEST")))
       (sut/toggle-private-mode term))))
 

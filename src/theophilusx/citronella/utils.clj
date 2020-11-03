@@ -1,8 +1,7 @@
 (ns theophilusx.citronella.utils
   (:import [com.googlecode.lanterna TextColor TextColor$Factory TextCharacter
             TerminalPosition TerminalSize SGR])
-  (:require [theophilusx.citronella.constants :as c]
-            [clojure.string :as string]))
+  (:require [clojure.string :as string]))
 
 (defn make-color [s]
   (if (string? s)
@@ -16,16 +15,18 @@
    (TextCharacter. chr (make-color fg)  (make-color bg) (make-array SGR 0))))
 
 (defn get-fg [^TextCharacter chr]
-  (.getForegroundColor chr))
+  (.toString (.getForegroundColor chr)))
 
 (defn get-bg [^TextCharacter chr]
-  (.getBackgroundColor chr))
+  (.toString (.getBackgroundColor chr)))
 
 (defn get-char [^TextCharacter chr]
   (.getCharacter chr))
 
 (defn sgr-modifiers [^TextCharacter chr]
-  (.getModifiers chr))
+  (let [mods (.getModifiers chr)]
+    (vec (for [m mods]
+           (keyword (string/lower-case (.toString m)))))))
 
 (defn column-pos [^TerminalPosition p]
   (.getColumn p))

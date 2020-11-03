@@ -44,8 +44,8 @@
             :cursor-visible true
             :size           (let [size (.getTerminalSize term)]
                               [(utils/columns size) (utils/rows size)])
-            :background     :default
-            :foreground     :default
+            :background     "DEFAULT"
+            :foreground     "DEFAULT"
             :text-graphics  (.newTextGraphics term)
             :obj            term}))))
 

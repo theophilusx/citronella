@@ -1,7 +1,8 @@
 (ns theophilusx.citronella.utils
   (:import [com.googlecode.lanterna TextColor TextColor$Factory TextCharacter
             TerminalPosition TerminalSize SGR])
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [theophilusx.citronella.constants :as c]))
 
 (defn make-color [s]
   (if (string? s)
@@ -12,7 +13,10 @@
   ([chr]
    (TextCharacter. chr))
   ([chr fg bg]
-   (TextCharacter. chr (make-color fg)  (make-color bg) (make-array SGR 0))))
+   (TextCharacter. chr (make-color fg)  (make-color bg) (make-array SGR 0)))
+  ([chr fg bg sgr-vec]
+   (let [ar (into-array SGR (map #(% c/sgr) sgr-vec))]
+     (TextCharacter. chr (make-color fg) (make-color bg) ar))))
 
 (defn get-fg [^TextCharacter chr]
   (.toString (.getForegroundColor chr)))

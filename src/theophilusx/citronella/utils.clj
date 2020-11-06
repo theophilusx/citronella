@@ -1,5 +1,5 @@
 (ns theophilusx.citronella.utils
-  (:import [com.googlecode.lanterna TextColor TextColor$Factory TextCharacter
+  (:import [com.googlecode.lanterna TextColor$Factory TextCharacter
             TerminalPosition TerminalSize SGR])
   (:require [clojure.string :as string]
             [theophilusx.citronella.constants :as c]))

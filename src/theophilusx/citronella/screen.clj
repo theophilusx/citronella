@@ -3,7 +3,8 @@
             [theophilusx.citronella.utils :as utils]
             [theophilusx.citronella.constants :as c]
             [theophilusx.citronella.text-graphics :as tgraph])
-  (:import [com.googlecode.lanterna.screen Screen TerminalScreen]))
+  (:import [com.googlecode.lanterna.screen Screen TerminalScreen]
+           com.googlecode.lanterna.TerminalPosition))
 
 (defn get-screen
   "Create a new screen definition map. The `opts` argument is a map of options
@@ -36,7 +37,7 @@
    (let [term         (terminal/get-terminal opts)
          ^Screen scrn (TerminalScreen. (:obj @term))]
      (atom {:type   (:type @term)
-            :started false
+            :started? false
             :cursor (let [pos (.getCursorPosition scrn)]
                       [(utils/column-pos pos) (utils/row-pos pos)])
             :size   (let [size (.getTerminalSize scrn)]
@@ -50,15 +51,15 @@
   [scrn]
   (when (not (:started @scrn))
     (.startScreen (:obj @scrn))
-    (swap! scrn update :started not)))
+    (swap! scrn update :started? not)))
 
 (defn stop
   "Stop the screen. The `scrn` argument is an atom containing the screen
   definition map."
   [scrn]
-  (when (:started @scrn)
+  (when (:started? @scrn)
     (.stopScreen (:obj @scrn))
-    (swap! scrn update :started not)))
+    (swap! scrn update :started? not)))
 
 (defn cursor-position
   "Gets the current cursor position within the screen. Sets the `:cursor` key
@@ -67,7 +68,7 @@
   [scrn]
   (let [pos (.getCursorPosition (:obj @scrn))]
     (swap! scrn assoc :cursor [(utils/column-pos pos) (utils/row-pos pos)])
-    (:curesor @scrn)))
+    (:cursor @scrn)))
 
 (defn set-cursor
   "Sets the cursor location within the screen specified in the map stored in
@@ -77,8 +78,10 @@
    (.setCursorPosition (:obj @scrn) nil)
    (swap! scrn assoc :cursor nil))
   ([scrn col row]
-   (.setCursorPosition (:obj @scrn) col row)
-   (swap! scrn assoc :cursor [col row])))
+   (.setCursorPosition (:obj @scrn) (TerminalPosition. col row))
+   (swap! scrn assoc :cursor [col row]
+          :need-refresh? true)
+   (:cursor @scrn)))
 
 (defn size
   "Return a vector representing the size of the screen as `[columns rows]`. Also
@@ -93,13 +96,17 @@
   "Refresh the screen. Copies the data from the backing buffer to the screen.
   The `scrn` argument is an atom containing the screen definition map."
   [scrn]
-  (.refresh (:obj @scrn)))
+  (.refresh (:obj @scrn))
+  (swap! scrn assoc :need-refresh? false)
+  (:need-refresh? @scrn))
 
 (defn clear
   "Clear the screen. The `scrn` argument is an atom containing the screen
   definition map."
   [scrn]
-  (.clear (:obj @scrn)))
+  (.clear (:obj @scrn))
+  (swap! scrn assoc :need-refresh? true)
+  (:need-refresh? @scrn))
 
 (defn get-back-char
   "Get the character within the backing store buffer at location column `col`
@@ -133,43 +140,54 @@
   The `sgr-vec` argument is a vector of SGR keywords."
   ([scrn col row chr]
    (let [tc (utils/make-character chr)]
-     (.setCharacter (:obj @scrn) col row tc)))
+     (.setCharacter (:obj @scrn) col row tc)
+     (swap! scrn assoc :need-refresh? true)))
   ([scrn col row chr fg bg]
    (let [tc (utils/make-character chr fg bg)]
-     (.setCharacter (:obj @scrn) col row tc)))
+     (.setCharacter (:obj @scrn) col row tc)
+     (swap! scrn assoc :need-refresh? true)))
   ([scrn col row chr fg bg sgr-vec]
    (let [tc (utils/make-character chr fg bg sgr-vec)]
-     (.setCharacter (:obj @scrn) col row tc))))
+     (.setCharacter (:obj @scrn) col row tc)
+     (swap! scrn assoc :need-refresh true))))
 
 (defn put-string
   ([scrn s col row]
-   (tgraph/put-string (:text-graphics @scrn) s col row))
+   (tgraph/put-string (:text-graphics @scrn) s col row)
+   (swap! scrn assoc :need-refresh? true))
   ([scrn s col row sgr-vec]
-   (tgraph/put-string (:text-graphics @scrn) s col row sgr-vec)))
+   (tgraph/put-string (:text-graphics @scrn) s col row sgr-vec)
+   (swap! scrn assoc :need-refresh? true)))
 
 (defn draw-line
   [scrn colx rowx coly rowy chr]
-  (tgraph/draw-line (:text-graphics @scrn) colx rowx coly rowy chr))
+  (tgraph/draw-line (:text-graphics @scrn) colx rowx coly rowy chr)
+  (swap! scrn assoc :need-refresh? true))
 
 (defn draw-rectangle
   [scrn col row cols rows chr]
-  (tgraph/draw-rectangle (:text-graphics @scrn) col row cols rows chr))
+  (tgraph/draw-rectangle (:text-graphics @scrn) col row cols rows chr)
+  (swap! scrn assoc :need-refresh? true))
 
 (defn fill
   [scrn chr]
-  (tgraph/fill (:text-graphics @scrn) chr))
+  (tgraph/fill (:text-graphics @scrn) chr)
+  (swap! scrn assoc :need-refresh? true))
 
 (defn fill-rectangle
   [scrn col row cols rows chr]
-  (tgraph/fill-rectangle (:text-graphics @scrn) col row cols rows chr))
+  (tgraph/fill-rectangle (:text-graphics @scrn) col row cols rows chr)
+  (swap! scrn assoc :need-refresh? true))
 
 (defn set-tg-fg
   [scrn color]
-  (tgraph/set-fg (:text-graphics @scrn) color))
+  (tgraph/set-fg (:text-graphics @scrn) color)
+  (swap! scrn assoc :need-refresh? true))
 
 (defn set-tg-bg
   [scrn color]
-  (tgraph/set-bg (:text-graphics @scrn) color))
+  (tgraph/set-bg (:text-graphics @scrn) color)
+  (swap! scrn assoc :need-refresh? true))
 
 (defn read-input
   "Read one character of input. This is a blocking function. The `scrn` argument

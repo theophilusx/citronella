@@ -1,0 +1,12 @@
+{
+ :source-paths #{"src" "test" "demo"}
+ :ignore-classpath-directories true
+ :keep-require-at-start? true
+ :show-docs-arity-on-same-line? true
+ :auto-add-ns-to-new-files? true
+ :project-specs [{:project-path "deps.edn"
+                  :classpath-cmd ["clojure" "-Spath"]}]
+ :dependency-scheme "jar"
+ :clj-kondo {:linters {:unused-public {:level :off}}}
+ :linters {:unused-public {:level :off}}
+ }

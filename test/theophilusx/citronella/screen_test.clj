@@ -47,6 +47,72 @@
   (testing "set cursor position test"
     (is (= [12 10] (sut/set-cursor scrn 12 10)))))
 
+(deftest get-char-tests
+  (sut/start scrn)
+  (testing "get back char test"
+    (let [c (sut/get-back-char scrn 10 10)]
+      (is (map? c))
+      (is (= (keys c) '(:char :fg :bg :modifiers)))
+      (is (= \space (:char c)))
+      (is (= "DEFAULT" (:fg c)))
+      (is (= "DEFAULT" (:bg c)))
+      (is (= [] (:modifiers c))))
+    (let [c (sut/get-front-char scrn 10 10)]
+      (is (map? c))
+      (is (= (keys c) '(:char :fg :bg :modifiers)))
+      (is (= \space (:char c)))
+      (is (= "DEFAULT" (:fg c)))
+      (is (= "DEFAULT" (:bg c)))
+      (is (= [] (:modifiers c)))))
+  (sut/stop scrn))
+
+(deftest put-char-tests
+  (sut/start scrn)
+  (testing "basic put char test"
+    (sut/put-char scrn 10 10 \t)
+    (let [c1 (sut/get-back-char scrn 10 10)]
+      (is (= \t (:char c1)))
+      (is (= "DEFAULT" (:fg c1)))
+      (is (= "DEFAULT" (:bg c1)))
+      (is (= [] (:modifiers c1))))
+    (let [c2 (sut/get-front-char scrn 10 10)]
+      (is (= \space (:char c2)))
+      (is (= "DEFAULT" (:fg c2)))
+      (is (= "DEFAULT" (:bg c2)))
+      (is (= [] (:modifiers c2))))
+    (sut/refresh scrn)
+    (let [c3 (sut/get-front-char scrn 10 10)]
+      (is (= \t (:char c3)))))
+  (testing "put char with color"
+    (sut/put-char scrn 10 10 \a "blue" "green")
+    (let [c4 (sut/get-back-char scrn 10 10)]
+      (is (= \a (:char c4)))
+      (is (= "BLUE" (:fg c4)))
+      (is (= "GREEN" (:bg c4)))
+      (is (= [] (:modifiers c4))))
+    (let [c5 (sut/get-front-char scrn 10 10)]
+      (is (= \t (:char c5))))
+    (sut/refresh scrn)
+    (let [c6 (sut/get-front-char scrn 10 10)]
+      (is (= \a (:char c6)))
+      (is (= "BLUE" (:fg c6)))
+      (is (= "GREEN" (:bg c6)))
+      (is (= [] (:modifiers c6)))))
+  (testing "put char with color and modifiers"
+    (sut/put-char scrn 10 10 \b "white" "yellow" [:bold])
+    (sut/refresh scrn)
+    (let [c7 (sut/get-back-char scrn 10 10)
+          c8 (sut/get-front-char scrn 10 10)]
+      (is (= \b (:char c7)))
+      (is (= "WHITE" (:fg c7)))
+      (is (= "YELLOW" (:bg c7)))
+      (is (= [:bold] (:modifiers c7)))
+      (is (= \b (:char c8)))
+      (is (= "WHITE" (:fg c8)))
+      (is (= "YELLOW" (:bg c8)))
+      (is (= [:bold] (:modifiers c8)))))
+  (sut/stop scrn))
+
 (deftest screen-function-tests
   (doseq [s [:text :gui]]
     (reset! scrn @(sut/get-screen {:type s}))
@@ -60,6 +126,8 @@
     (testing "refresh screen"
       (sut/refresh scrn)
       (is (not (:need-refresh? @scrn))))
+    (get-char-tests)
+    (put-char-tests)
     (sut/close scrn)))
 
 (defn test-ns-hook []

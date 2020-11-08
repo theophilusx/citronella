@@ -219,6 +219,38 @@
       (is (every? #(= \b (:char %)) cs2))))
   (sut/stop scrn))
 
+(deftest test-tg-colors
+  (sut/start scrn)
+  (testing (str "Text graphics foreground test: " (:type @scrn))
+    (sut/set-tg-fg scrn "red")
+    (sut/fill scrn \space)
+    (let [cs (map #(sut/get-back-char scrn (first %) (second %))
+                  (vec (for [c (range 0 80)
+                             r (range 0 24)]
+                         [c r])))]
+      (is (every? #(= "RED" (:fg %)) cs)))
+    (sut/refresh scrn)
+    (let [cs2 (map #(sut/get-front-char scrn (first %) (second %))
+                  (vec (for [c (range 0 80)
+                             r (range 0 24)]
+                         [c r])))]
+      (is (every? #(= "RED" (:fg %)) cs2))))
+  (testing (str "Text graphics background test: " (:type @scrn))
+    (sut/set-tg-bg scrn "yellow")
+    (sut/fill scrn \space)
+    (let [cs (map #(sut/get-back-char scrn (first %) (second %))
+                  (vec (for [c (range 0 80)
+                             r (range 0 24)]
+                         [c r])))]
+      (is (every? #(= "YELLOW" (:bg %)) cs)))
+    (sut/refresh scrn)
+    (let [cs2 (map #(sut/get-front-char scrn (first %) (second %))
+                   (vec (for [c (range 0 80)
+                              r (range 0 24)]
+                          [c r])))]
+      (is (every? #(= "YELLOW" (:bg %)) cs2))))
+  (sut/stop scrn))
+
 (deftest screen-function-tests
   (doseq [s [:text :gui]]
     (reset! scrn @(sut/get-screen {:type s}))
@@ -237,6 +269,7 @@
     (put-string-tests)
     (draw-tests)
     (fill-tests)
+    (test-tg-colors)
     (sut/close scrn)))
 
 (defn test-ns-hook []

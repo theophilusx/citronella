@@ -1,6 +1,7 @@
 (ns theophilusx.citronella.screen-test
   (:require [theophilusx.citronella.screen :as sut]
-            [clojure.test :refer [deftest testing is]])
+            [clojure.test :refer [deftest testing is]]
+            [clojure.string :as string])
   (:import [com.googlecode.lanterna.screen TerminalScreen]))
 
 (def scrn (atom nil))
@@ -76,10 +77,7 @@
       (is (= "DEFAULT" (:bg c1)))
       (is (= [] (:modifiers c1))))
     (let [c2 (sut/get-front-char scrn 10 10)]
-      (is (= \space (:char c2)))
-      (is (= "DEFAULT" (:fg c2)))
-      (is (= "DEFAULT" (:bg c2)))
-      (is (= [] (:modifiers c2))))
+      (is (= \space (:char c2))))
     (sut/refresh scrn)
     (let [c3 (sut/get-front-char scrn 10 10)]
       (is (= \t (:char c3)))))
@@ -113,6 +111,54 @@
       (is (= [:bold] (:modifiers c8)))))
   (sut/stop scrn))
 
+(deftest put-string-tests
+  (sut/start scrn)
+  (testing (str "basic put string: " (:type @scrn))
+    (let [test-str "Put string test"]
+      (sut/put-string scrn test-str 5 5)
+      (let [cs1 (mapv #(sut/get-back-char scrn % 5)
+                      (range 5 (+ 5 (count test-str))))
+            s1 (string/join "" (mapv :char cs1))]
+        (is (= s1 test-str))
+        (is (every? #(= "DEFAULT" (:fg %)) cs1))
+        (is (every? #(= "DEFAULT" (:bg %)) cs1))
+        (is (every? #(= [] (:modifiers %)) cs1)))
+      (let [cs2 (mapv #(sut/get-front-char scrn % 5)
+                      (range 5 (+ 5 (count test-str))))
+            s2 (string/join (map :char cs2))]
+        (is (not= s2 test-str)))
+      (sut/refresh scrn)
+      (let [cs3 (mapv #(sut/get-front-char scrn % 5)
+                      (range 5 (+ 5 (count test-str))))
+            s3 (string/join "" (map :char cs3))]
+        (is (= s3 test-str))
+        (is (every? #(= "DEFAULT" (:fg %)) cs3))
+        (is (every? #(= "DEFAULT" (:bg %)) cs3))
+        (is (every? #(= [] (:modifiers %)) cs3)))))
+  (testing (str "put string with modifiers: " (:type @scrn))
+    (let [test-str "test string with modifiers"]
+      (sut/put-string scrn test-str 5 6 [:bold])
+      (let [cs4 (mapv #(sut/get-back-char scrn % 6)
+                      (range 5 (+ 5 (count test-str))))
+            s4 (string/join (map :char cs4))]
+        (is (= s4 test-str))
+        (is (every? #(= "DEFAULT" (:fg %)) cs4))
+        (is (every? #(= "DEFAULT" (:bg %)) cs4))
+        (is (every? #(= [:bold] (:modifiers %)) cs4)))
+      (let [cs5 (mapv #(sut/get-front-char scrn % 6)
+                      (range 5 (+ 5 (count test-str))))
+            s5 (string/join (map :char cs5))]
+        (is (not= s5 test-str)))
+      (sut/refresh scrn)
+      (let [cs6 (mapv #(sut/get-front-char scrn % 6)
+                      (range 5 (+ 5 (count test-str))))
+            s6 (string/join (map :char cs6))]
+        (is (= s6 test-str))
+        (is (every? #(= "DEFAULT" (:fg %)) cs6))
+        (is (every? #(= "DEFAULT" (:bg %)) cs6))
+        (is (every? #(= [:bold] (:modifiers %)) cs6)))))
+  (sut/stop scrn))
+
 (deftest screen-function-tests
   (doseq [s [:text :gui]]
     (reset! scrn @(sut/get-screen {:type s}))
@@ -128,6 +174,7 @@
       (is (not (:need-refresh? @scrn))))
     (get-char-tests)
     (put-char-tests)
+    (put-string-tests)
     (sut/close scrn)))
 
 (defn test-ns-hook []

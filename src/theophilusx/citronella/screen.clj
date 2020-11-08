@@ -217,6 +217,7 @@
   describing the key input. The map has the following keys -
 
   | Keyword     | Description                                                  |
+  |-------------|---------------------------------------------------------------
   | :event-time | Time in milliseconds since epoch when the key event occurred |
   | :type       | The key type as a keyword.                                   |
   |             | See `theophilusx.citronella.constants`                       |

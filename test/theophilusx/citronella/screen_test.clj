@@ -159,6 +159,66 @@
         (is (every? #(= [:bold] (:modifiers %)) cs6)))))
   (sut/stop scrn))
 
+(deftest draw-tests
+  (sut/start scrn)
+  (testing (str "draw line test: " (:type @scrn))
+    (sut/draw-line scrn 5 5 10 5 \-)
+    (let [ls (map #(sut/get-back-char scrn % 5) (range 5 11))]
+      (is (every? #(= \- (:char %)) ls)))
+    (sut/refresh scrn)
+    (let [ls2 (map #(sut/get-front-char scrn % 5) (range 5 11))]
+      (is (every? #(= \- (:char %)) ls2))))
+  (testing (str "draw rectangle test: " (:type @scrn))
+    (sut/draw-rectangle scrn 5 6 5 3 \+)
+    (let [t (map #(sut/get-back-char scrn % 6) (range 5 10))
+          b (map #(sut/get-back-char scrn % 8) (range 5 10))
+          l (map #(sut/get-back-char scrn 5 %) (range 6 9))
+          r (map #(sut/get-back-char scrn 9 %) (range 6 9))]
+      (is (every? #(= \+ (:char %)) t))
+      (is (every? #(= \+ (:char %)) b))
+      (is (every? #(= \+ (:char %)) l))
+      (is (every? #(= \+ (:char %)) r)))
+    (sut/refresh scrn)
+    (let [t2 (map #(sut/get-front-char scrn % 6) (range 5 10))
+          b2 (map #(sut/get-front-char scrn % 8) (range 5 10))
+          l2 (map #(sut/get-front-char scrn 5 %) (range 6 9))
+          r2 (map #(sut/get-front-char scrn 9 %) (range 6 9))]
+      (is (every? #(= \+ (:char %)) t2))
+      (is (every? #(= \+ (:char %)) b2))
+      (is (every? #(= \+ (:char %)) l2))
+      (is (every? #(= \+ (:char %)) r2))))
+  (sut/stop scrn))
+
+(deftest fill-tests
+  (sut/start scrn)
+  (testing (str "Fill tests: " (:type @scrn))
+    (sut/fill scrn \a)
+    (let [cs (map #(sut/get-back-char scrn (first %) (second %))
+                  (vec (for [c (range 0 80)
+                             r (range 0 24)]
+                         [c r])))]
+      (is (every? #(= \a (:char %)) cs)))
+    (sut/refresh scrn)
+    (let [cs2 (map #(sut/get-back-char scrn (first %) (second %))
+                  (vec (for [c (range 0 80)
+                             r (range 0 24)]
+                         [c r])))]
+      (is (every? #(= \a (:char %)) cs2))))
+  (testing (str "Fill region tests: " (:type @scrn))
+    (sut/fill-rectangle scrn 5 5 10 10 \b)
+    (let [cs (map #(sut/get-back-char scrn (first %) (second %))
+                  (vec (for [c (range 5 15)
+                             r (range 5 15)]
+                         [c r])))]
+      (is (every? #(= \b (:char %)) cs)))
+    (sut/refresh scrn)
+    (let [cs2 (map #(sut/get-front-char scrn (first %) (second %))
+                  (vec (for [c (range 5 15)
+                             r (range 5 15)]
+                         [c r])))]
+      (is (every? #(= \b (:char %)) cs2))))
+  (sut/stop scrn))
+
 (deftest screen-function-tests
   (doseq [s [:text :gui]]
     (reset! scrn @(sut/get-screen {:type s}))
@@ -175,6 +235,8 @@
     (get-char-tests)
     (put-char-tests)
     (put-string-tests)
+    (draw-tests)
+    (fill-tests)
     (sut/close scrn)))
 
 (defn test-ns-hook []

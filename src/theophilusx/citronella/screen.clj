@@ -152,6 +152,10 @@
      (swap! scrn assoc :need-refresh true))))
 
 (defn put-string
+  "Write a string to the screen `scrn`. The `s` argument is the string to
+  write. The `col` and `row` arguments specify the column and row position to
+  start the writing. If `sgr-var` is provided, it is a vector of SGR modifier
+  keywords."
   ([scrn s col row]
    (tgraph/put-string (:text-graphics @scrn) s col row)
    (swap! scrn assoc :need-refresh? true))
@@ -160,31 +164,49 @@
    (swap! scrn assoc :need-refresh? true)))
 
 (defn draw-line
+  "Draw a line from `colx`/`rowx` to `coly`/`rowy` using the character `chr`
+  on the screen `scrn`, which is an atom containing a screen definition map."
   [scrn colx rowx coly rowy chr]
   (tgraph/draw-line (:text-graphics @scrn) colx rowx coly rowy chr)
   (swap! scrn assoc :need-refresh? true))
 
 (defn draw-rectangle
+  "Draw a rectangle starting with top left corner at `col`/`row` which is `cols`
+  wide and `rows` high on the screen specified by `scrn`, an atom containing
+  a screen definition map. Use the character `chr` to draw the border."
   [scrn col row cols rows chr]
   (tgraph/draw-rectangle (:text-graphics @scrn) col row cols rows chr)
   (swap! scrn assoc :need-refresh? true))
 
 (defn fill
+  "Fill the screen with a specified character. The `scrn` argument is an atom
+  containing a screen definition map. The `chr` argument is a character to use
+  to fill the screen."
   [scrn chr]
   (tgraph/fill (:text-graphics @scrn) chr)
   (swap! scrn assoc :need-refresh? true))
 
 (defn fill-rectangle
+  "Fill a rectangle on the screen with a specific character. The `scrn` argument
+  is an atom containing a screen definition map. The `col` and `row` arguments
+  specify the column and row position of the top left corner and the `cols` and
+  `rows` arguments specify the width and height of the rectangle."
   [scrn col row cols rows chr]
   (tgraph/fill-rectangle (:text-graphics @scrn) col row cols rows chr)
   (swap! scrn assoc :need-refresh? true))
 
 (defn set-tg-fg
+  "Set the foreground color of the text graphics object. The `scrn` argument is
+  an atom containing a screen definition map and `color` is a string representing
+  an ANSI, indexed or RGB color name."
   [scrn color]
   (tgraph/set-fg (:text-graphics @scrn) color)
   (swap! scrn assoc :need-refresh? true))
 
 (defn set-tg-bg
+  "Set the background color of the text graphics object. The `scrn` argument is
+  an atom containing a screen definition map and `color` is a string representing
+  an ANSI, indexed or RGB color name."
   [scrn color]
   (tgraph/set-bg (:text-graphics @scrn) color)
   (swap! scrn assoc :need-refresh? true))

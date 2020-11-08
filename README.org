@@ -1,6 +1,10 @@
 * citronella
 
-FIXME: my new library.
+A library for writing text based interfaces for Clojure similar to ncurses. The
+library is based on the [[https://github.com/mabe02/lanterna][Lanterna]] Java library. The library provides three levels
+of abstraction, from a low level basic terminal, a buffered screen and a high
+level graphics terminal with some higher level abstractions, like panels and
+buttons.
 
 ** Usage
 
